@@ -1,11 +1,13 @@
 package model;
 
 import java.util.ArrayList;
-
 import model.Card.*;
+import java.util.Random;
+
 
 public class Deck {
 	public ArrayList<Card> cards = new ArrayList<Card>();
+	Random rand = new Random();
    
 	
 	public Deck() {
@@ -27,6 +29,21 @@ public class Deck {
 			}
 		}
 		
+	}
+	
+	public void shuffleSelf() {
+		ArrayList<Card> shuffledCards = new ArrayList<Card>();
+
+		Card myCard;
+		int randomNumber;
+		for (int i=51; i>=0; i--) {
+			randomNumber = rand.nextInt(i+1);
+			myCard = this.cards.get(randomNumber);
+			shuffledCards.add(myCard);
+			this.cards.remove(randomNumber);
+		}
+		
+		this.cards = shuffledCards;
 	}
 	
 	
