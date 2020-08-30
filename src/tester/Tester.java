@@ -1,21 +1,14 @@
 package tester;
 
-import model.Card;
+import model.*;
 
 public class Tester {
 
 	public static void main(String[] args) {
-		Card card;
-		try {
-			card = new Card(Card.Suit.CLUBS, 4);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
+		Deck deck = new Deck();
 		
-		System.out.println(card.getNumber());
-		System.out.println(card.getSuit());
+		
+		for (int i=0; i<52;i++) System.out.println(deck.cards.get(i).readCard());
 
 		
 

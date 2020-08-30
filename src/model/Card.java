@@ -2,7 +2,7 @@ package model;
 
 public class Card {
 	
-	public enum Suit {
+	public static enum Suit {
 		  SPADES,
 		  CLUBS,
 		  HEARTS,
@@ -24,6 +24,10 @@ public class Card {
 	
 	public int getNumber() {
 		return this.number;
+	}
+	
+	public String readCard() {
+		return number+" of "+suit;
 	}
 	
 	
