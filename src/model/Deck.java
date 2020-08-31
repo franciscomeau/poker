@@ -11,7 +11,26 @@ public class Deck {
    
 	
 	public Deck() {
+		restockCards();
+	}
+	
+	public void shuffleSelf() {
+		ArrayList<Card> shuffledCards = new ArrayList<Card>();
+
+		Card myCard;
+		int randomNumber;
+		for (int i=cards.size()-1; i>=0; i--) {
+			randomNumber = rand.nextInt(i+1);
+			myCard = this.cards.get(randomNumber);
+			shuffledCards.add(myCard);
+			this.cards.remove(randomNumber);
+		}
 		
+		this.cards = shuffledCards;
+	}
+	
+	public void restockCards() {
+		this.cards.clear();
 		Suit suit = Card.Suit.CLUBS;
 		
 		for (int j=0; j<4;j++) {
@@ -28,22 +47,12 @@ public class Deck {
 				}
 			}
 		}
-		
 	}
 	
-	public void shuffleSelf() {
-		ArrayList<Card> shuffledCards = new ArrayList<Card>();
-
-		Card myCard;
-		int randomNumber;
-		for (int i=51; i>=0; i--) {
-			randomNumber = rand.nextInt(i+1);
-			myCard = this.cards.get(randomNumber);
-			shuffledCards.add(myCard);
-			this.cards.remove(randomNumber);
-		}
-		
-		this.cards = shuffledCards;
+	public Card drawCard() {
+		Card myCard = this.cards.get(0);
+		this.cards.remove(0);
+		return myCard;
 	}
 	
 	
