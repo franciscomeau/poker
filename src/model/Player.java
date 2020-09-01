@@ -3,6 +3,7 @@ package model;
 public class Player {
 	
 	public int stack;
+	public String name;
 	
 	public Card[] hand = new Card[2];
 	

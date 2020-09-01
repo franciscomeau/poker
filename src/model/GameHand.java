@@ -5,6 +5,8 @@ public class GameHand {
 	Card[] flop = new Card[3];
 	Card turn, river;
 	
-	int pot, betToMatch, bigBlind;
+	boolean betsAreOver = false;
+	
+	int pot = 0, betToMatch, bigBlind;
 
 }
