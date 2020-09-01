@@ -20,6 +20,7 @@ public class GameFlow {
 		
 		//get player names
 		Scanner scanner = new Scanner(System.in);  // Create a Scanner object
+		String userInput;
 		
 		System.out.println("Player1, please enter your name.");
 	    String userName = scanner.nextLine();  // Read user input
@@ -74,10 +75,23 @@ public class GameFlow {
 			
 			//betting process
 			while (!gameHand.betsAreOver) {
+				
 				//button folds, calls, or raises
 				printStacks();
 				System.out.println("Pot is: "+gameHand.pot);
+				
 				System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
+				userInput = scanner.nextLine();  // Read user input
+				
+				while (!validateUserInput(userInput)) {
+					System.out.println("Invalid input: "+userInput);
+					System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
+					userInput = scanner.nextLine();  // Read user input
+				}
+				
+				//processUserInput
+				
+				
 				
 				//other player checks, folds, calls, or raises
 			}
@@ -123,6 +137,19 @@ public class GameFlow {
 		System.out.println(player1.name+": "+player1.stack);
 		System.out.println(player2.name+": "+player2.stack);
 
+	}
+	
+	private static void betProcess() {
+		
+	}
+	
+	private static boolean validateUserInput(String input) {
+		
+		return false;
+	}
+	
+	private static void processUserInput(String userInput, Player player, GameHand gameHand) {
+		
 	}
 
 }
