@@ -2,6 +2,8 @@ package model;
 
 public class Player {
 	
+	public int stack;
+	
 	public Card[] hand = new Card[2];
 	
 	public void setHand(Card card1, Card card2) throws Exception {
