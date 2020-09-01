@@ -8,7 +8,9 @@ public class Dealer {
 		this.deck = deck;
 	}
 	
-	
+	public Deck getDeck() {
+		return deck;
+	}
 	
 	
 
