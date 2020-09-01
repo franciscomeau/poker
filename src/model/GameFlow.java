@@ -51,6 +51,8 @@ public class GameFlow {
 			notButton.stack-=BIG_BLIND;
 			gameHand.pot+=BIG_BLIND;
 			
+			gameHand.betToMatch=BIG_BLIND;
+			
 			System.out.println(button.name+" has posted small blind, and "+notButton.name+" has posted big blind.");
 			printStacks();
 			System.out.println("Pot is: "+gameHand.pot);
