@@ -7,6 +7,6 @@ public class GameHand {
 	
 	boolean betsAreOver = false;
 	
-	int pot = 0, betToMatch, bigBlind;
+	int pot = 0, betToMatch = 0, bigBlind;
 
 }

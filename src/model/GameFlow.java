@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Scanner;
+import java.util.regex.*;
 
 public class GameFlow {
 	
@@ -85,14 +86,15 @@ public class GameFlow {
 				System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
 				userInput = scanner.nextLine();  // Read user input
 				
-				while (!validateUserInput(userInput)) {
+				//try again if input not valid
+				while (!validateUserInput(userInput)) { //TODO CODE THIS
 					System.out.println("Invalid input: "+userInput);
 					System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
 					userInput = scanner.nextLine();  // Read user input
 				}
 				
 				//processUserInput
-				
+				processUserInput(userInput, button, gameHand); //TODO CODE THIS
 				
 				
 				//other player checks, folds, calls, or raises
@@ -145,12 +147,23 @@ public class GameFlow {
 		
 	}
 	
-	private static boolean validateUserInput(String input) {
+	public static boolean validateUserInput(String input) {
 		
-		return false;
+		String validExpressionFormat = "[fc]|r (\\d)+";
+		Pattern pattern = Pattern.compile(validExpressionFormat);
+		Matcher matcher = pattern.matcher(input);
+		
+		if (input.charAt(0)=='r') {
+			
+		}
+		
+		
+		return matcher.matches();
 	}
 	
 	private static void processUserInput(String userInput, Player player, GameHand gameHand) {
+		
+		
 		
 	}
 
