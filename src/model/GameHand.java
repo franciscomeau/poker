@@ -7,8 +7,13 @@ public class GameHand {
 	
 	Player handWinner;
 	
-	boolean betsAreOver = false, handIsOver = true;
+	boolean betsAreOver = false, handIsOver = false;
 	
 	int pot = 0, betToMatch = 0, bigBlind;
+	
+	public void resetBettingProcess() {
+		this.betsAreOver = false;
+		this.betToMatch = 0;
+	}
 
 }

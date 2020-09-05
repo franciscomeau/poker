@@ -15,12 +15,14 @@ public class GameFlow {
 	static Player notButton;
 	static Dealer dealer = new Dealer(new Deck());
 	
+	static Scanner scanner;
+	
 	
 
 	public static void main(String[] args) {
 		
 		//get player names
-		Scanner scanner = new Scanner(System.in);  // Create a Scanner object
+		scanner = new Scanner(System.in);  // Create a Scanner object
 		String userInput;
 		
 		System.out.println("Player1, please enter your name.");
@@ -81,26 +83,10 @@ public class GameFlow {
 			gameHand.handIsOver = false;
 			
 			while (!gameHand.betsAreOver) {
-				
-				//button folds, calls, or raises
-				printStacks();
-				System.out.println("Pot is: "+gameHand.pot);
-				System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
-				userInput = scanner.nextLine();  // Read user input
-				
-				//try again if input not valid
-				while (!validateUserInput(userInput, button)) {
-					System.out.println("Invalid input: "+userInput);
-					System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
-					userInput = scanner.nextLine();  // Read user input
-				}
-				
-				//processUserInput
-				processUserInput(userInput, button, gameHand);
-				
-				
-				//other player checks, folds, calls, or raises
+				doBettingProcess(gameHand);
 			}
+			
+			gameHand.resetBettingProcess();
 			
 			//dealer flops
 			
@@ -145,8 +131,42 @@ public class GameFlow {
 
 	}
 	
-	private static void betProcess() {
+	private static void doBettingProcess(GameHand gameHand) {
+		String userInput;
 		
+		String queryMessage = ", what shall you do? Enter f for fold, c for call/check, or r XXX to raise where XXX is the amount...";
+		
+		//button folds, calls, or raises
+		printStacks();
+		System.out.println("Pot is: "+gameHand.pot);
+		System.out.println(button.name+queryMessage);	
+		userInput = scanner.nextLine();  // Read user input
+		
+		//try again if input not valid
+		while (!validateUserInput(userInput, button)) {
+			System.out.println("Invalid input: "+userInput);
+			System.out.println(button.name+queryMessage);	
+			userInput = scanner.nextLine();  // Read user input
+		}
+		
+		//processUserInput
+		processUserInput(userInput, button, gameHand);
+		
+		//other player checks, folds, calls, or raises
+		printStacks();
+		System.out.println("Pot is: "+gameHand.pot);
+		System.out.println(notButton.name+queryMessage);	
+		userInput = scanner.nextLine();  // Read user input
+		
+		//try again if input not valid
+		while (!validateUserInput(userInput, notButton)) {
+			System.out.println("Invalid input: "+userInput);
+			System.out.println(notButton.name+queryMessage);	
+			userInput = scanner.nextLine();  // Read user input
+		}
+		
+		//processUserInput
+		processUserInput(userInput, notButton, gameHand);
 	}
 	
 	public static boolean validateUserInput(String input, Player player) {
