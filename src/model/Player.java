@@ -16,5 +16,9 @@ public class Player {
 	public String readHand() {
 		return hand[0].readCard()+" and "+hand[1].readCard();
 	}
+	
+	public void bet(int amount) {
+		this.stack -= amount;
+	}
 
 }

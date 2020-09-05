@@ -77,24 +77,26 @@ public class GameFlow {
 			}
 			
 			//betting process
+			gameHand.betsAreOver = false;
+			gameHand.handIsOver = false;
+			
 			while (!gameHand.betsAreOver) {
 				
 				//button folds, calls, or raises
 				printStacks();
 				System.out.println("Pot is: "+gameHand.pot);
-				
 				System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
 				userInput = scanner.nextLine();  // Read user input
 				
 				//try again if input not valid
-				while (!validateUserInput(userInput)) { //TODO CODE THIS
+				while (!validateUserInput(userInput, button)) {
 					System.out.println("Invalid input: "+userInput);
 					System.out.println(button.name+", what shall you do? Enter f for fold, c for call, or r XXX to raise where XXX is the amount...");	
 					userInput = scanner.nextLine();  // Read user input
 				}
 				
 				//processUserInput
-				processUserInput(userInput, button, gameHand); //TODO CODE THIS
+				processUserInput(userInput, button, gameHand);
 				
 				
 				//other player checks, folds, calls, or raises
@@ -147,24 +149,49 @@ public class GameFlow {
 		
 	}
 	
-	public static boolean validateUserInput(String input) {
+	public static boolean validateUserInput(String input, Player player) {
 		
 		String validExpressionFormat = "[fc]|r (\\d)+";
 		Pattern pattern = Pattern.compile(validExpressionFormat);
 		Matcher matcher = pattern.matcher(input);
 		
+		if (!matcher.matches()) return false;
+		
 		if (input.charAt(0)=='r') {
-			
+			int raiseAmount = Integer.parseInt(input.substring(2));
+			if (raiseAmount < BIG_BLIND || raiseAmount > player.stack) return false;
 		}
 		
-		
-		return matcher.matches();
+		return true;
 	}
 	
 	private static void processUserInput(String userInput, Player player, GameHand gameHand) {
 		
+		if (userInput.charAt(0) == 'f') {
+			gameHand.betsAreOver = true;
+			gameHand.handIsOver = true;
+			gameHand.handWinner = getOtherPlayer(player);
+		}
 		
+		if (userInput.charAt(0) == 'c') {
+			player.bet(gameHand.betToMatch);
+			gameHand.pot += gameHand.betToMatch;
+			gameHand.betsAreOver = true;
+		}
 		
+		if (userInput.charAt(0) == 'r') {
+			int raiseAmount = Integer.parseInt(userInput.substring(2));
+			gameHand.betToMatch = raiseAmount;
+			player.bet(raiseAmount);
+			gameHand.pot += raiseAmount;
+		}
+		
+	}
+	
+	public static Player getOtherPlayer(Player player) {
+		if (player==button) return notButton;
+		
+		else return button;
 	}
 
 }
