@@ -29,13 +29,15 @@ public class GameFlow {
 		scanner = new Scanner(System.in);
 		String userInput;
 		
-		//TODO: send error message for invalid input
-		do {
+		while (true) {
 			System.out.print("Please enter the number of desired players: ");
 		    numberOfPlayers = scanner.nextInt();  // Read user input
-		} while (numberOfPlayers<2||numberOfPlayers>TABLE_SIZE);
-		
-		System.out.println();
+			System.out.println();
+		    if (numberOfPlayers>=2 && numberOfPlayers<=TABLE_SIZE) {
+		    	break;
+		    }
+		    System.out.println("Invalid input, number of players must be between 2 and "+TABLE_SIZE);
+		}
 		
 		//get player's name then initialize their stack
 		for (int i=0;i<numberOfPlayers; i++) {
@@ -48,8 +50,9 @@ public class GameFlow {
 		GameHand gameHand;
 		
 		//play hand
-		while (!checkHaveWinner(players)) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
-			
+		//while (!checkHaveWinner(players)) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
+		while (checkHaveWinner(players)>=0) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
+	
 			//reinitialize hand variables
 			gameHand = new GameHand();
 			
@@ -112,7 +115,7 @@ public class GameFlow {
 
 			//create new betting process
 			
-			//hand judger process
+			//hand judging process
 			
 			//show cards process
 					
@@ -150,21 +153,22 @@ public class GameFlow {
 		}
 	}
 	
-	static private boolean checkHaveWinner(Player[] players) {
+	static private int checkHaveWinner(Player[] players) {
 		int playersWithStacks = 0;
+		int winnerIndex=0;
 		for (int i=0;i<players.length;i++) {
 			if (players[i].stack>0) {
 				playersWithStacks++;
+				if (playersWithStacks>1) {
+					return -1;
+				}
+				winnerIndex=i;
 			}
 		}
-		
-		if (playersWithStacks>=2) {
-			return true;
-		} else {
-			return false;
-		}
+		return winnerIndex;
 	}
 	
+	//TODO: make bettingProcess its own class; when having another betting process, create a new bettingProcess object;
 	private static void doBettingProcess(GameHand gameHand) {
 		String userInput;
 		
