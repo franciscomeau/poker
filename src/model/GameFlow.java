@@ -48,10 +48,12 @@ public class GameFlow {
 		}
 	    
 		GameHand gameHand;
+		int winnerIndex = -1;
 		
 		//play hand
-		//while (!checkHaveWinner(players)) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
-		while (checkHaveWinner(players)>=0) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
+		while (winnerIndex==-1) {
+			
+			//TODO: check and update new number of players; for example that have left or been busted
 	
 			//reinitialize hand variables
 			gameHand = new GameHand();
@@ -72,27 +74,22 @@ public class GameFlow {
 			dealer.getDeck().restockCards();
 			dealer.getDeck().shuffleSelf();
 
-			//dealer deals playerHands
-			try {
-				notButton.setHand(dealer.getDeck().drawCard(), dealer.getDeck().drawCard());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				button.setHand(dealer.getDeck().drawCard(), dealer.getDeck().drawCard());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//dealer deals players' hands and prints it to screen
 			
-			//print players' hands
 			String handMessage = ", your hand is: ";
-			System.out.println(notButton.name+handMessage+notButton.readHand());
-			System.out.println(button.name+handMessage+button.readHand());
-
+			
+			for (int i=smallBlindPlayerIndex; i<players.length;i=modAddition(i,1)) {
+				try {
+					players[i].setHand(dealer.getDeck().drawCard(), dealer.getDeck().drawCard());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(players[i].name+handMessage+notButton.readHand());
+			}
 			
 			//betting process
+			//initialize betting process variables
 			gameHand.betsAreOver = false;
 			gameHand.handIsOver = false;
 			
@@ -100,7 +97,7 @@ public class GameFlow {
 				doBettingProcess(gameHand);
 			}
 			
-			//TODO: create new bettingProcess object instead of resetting gameHand variables
+			//TODO: create new bettingProcess object, from new bettingProcess class, instead of resetting gameHand variables
 			gameHand.resetBettingProcess();
 			
 			//dealer flops
@@ -124,27 +121,19 @@ public class GameFlow {
 			//increment positions for next hand
 			smallBlindPlayerIndex = modAddition(smallBlindPlayerIndex, 1);
 			bigBlindPlayerIndex = modAddition(bigBlindPlayerIndex, 1);
+			
+			//check if we have a winner
+			winnerIndex = checkHaveWinner(players);
 		}
 		
-		//reaches here when we have winner
+		//reaches here when we have winner due to previous while condition
 		
-		//find who is winner
-		for (int i=0;i<players.length;i++) {
-			if (players[i].stack>0) {
-				System.out.println(players[i].name+" is the winner.");
-				break;
-			}
-		}
+		System.out.println(players[winnerIndex].name+" is the winner.");
+		
 	}
 	
 	static private int modAddition(int smallBlindPlayerIndex, int toAdd) {
 		return (smallBlindPlayerIndex+toAdd)%numberOfPlayers;
-	}
-	
-	private void swapPlayerPositions() {
-		Player placeHolder = button;
-		button = notButton;
-		notButton = placeHolder;
 	}
 	
 	private static void printStacks() {
