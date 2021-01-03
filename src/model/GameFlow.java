@@ -11,7 +11,6 @@ public class GameFlow {
 	
 	static final int BIG_BLIND = 2;
 	static final int SMALL_BLIND = BIG_BLIND / 2;
-	//static Player player1 = new Player();	static Player player2 = new Player();
 	
 	static int numberOfPlayers = 2;
 	static Player[] players = new Player[numberOfPlayers];
@@ -54,15 +53,12 @@ public class GameFlow {
 			//reinitialize hand variables
 			gameHand = new GameHand();
 			
-			//TODO: create players[index].postBet(int betSize) method in Player which returns the actual amount posted if the player doesnt have enough to post the whole blind
 			//post small blind
-			players[smallBlindPlayerIndex].stack-=SMALL_BLIND;
-			gameHand.pot+=SMALL_BLIND;
-			
+			gameHand.pot+=players[smallBlindPlayerIndex].postBet(SMALL_BLIND);
 			//post big blind
-			players[bigBlindPlayerIndex].stack-=BIG_BLIND;
-			gameHand.pot+=BIG_BLIND;
-			
+			gameHand.pot+=players[bigBlindPlayerIndex].postBet(BIG_BLIND);
+
+			//TODO: make betToMatch part of a new bettingProcess class
 			gameHand.betToMatch=BIG_BLIND;
 			
 			System.out.println(players[smallBlindPlayerIndex]+" has posted small blind, and "+players[bigBlindPlayerIndex]+" has posted big blind.");
@@ -219,7 +215,7 @@ public class GameFlow {
 		}
 		
 		if (userInput.charAt(0) == 'c') {
-			player.bet(gameHand.betToMatch);
+			player.postBet(gameHand.betToMatch);
 			gameHand.pot += gameHand.betToMatch;
 			gameHand.betsAreOver = true;
 		}
@@ -227,7 +223,7 @@ public class GameFlow {
 		if (userInput.charAt(0) == 'r') {
 			int raiseAmount = Integer.parseInt(userInput.substring(2));
 			gameHand.betToMatch = raiseAmount;
-			player.bet(raiseAmount);
+			player.postBet(raiseAmount);
 			gameHand.pot += raiseAmount;
 		}
 		

@@ -17,8 +17,16 @@ public class Player {
 		return hand[0].readCard()+" and "+hand[1].readCard();
 	}
 	
-	public void bet(int amount) {
-		this.stack -= amount;
+	public int postBet(int toPost) {
+		int realAmount;
+		if (toPost <= stack) {
+			realAmount = toPost;
+			stack-=toPost;
+		} else {
+			stack = 0;
+			realAmount = stack;
+		}
+		return realAmount;
 	}
 
 }
