@@ -5,12 +5,18 @@ import java.util.regex.*;
 
 public class GameFlow {
 	
-	static final int BUY_IN = 10000;
 	
-	static final int BIG_BLIND = 100;
+	static final int TABLE_SIZE = 9;
+	static final int BUY_IN = 100;
+	
+	static final int BIG_BLIND = 2;
 	static final int SMALL_BLIND = BIG_BLIND / 2;
-	static Player player1 = new Player();	static Player player2 = new Player();
+	//static Player player1 = new Player();	static Player player2 = new Player();
 	
+	static int numberOfPlayers = 2;
+	static Player[] players = new Player[numberOfPlayers];
+	static int smallBlindPlayerIndex = 0;
+	static int bigBlindPlayerIndex =1;
 	static Player button;
 	static Player notButton;
 	static Dealer dealer = new Dealer(new Deck());
@@ -21,42 +27,45 @@ public class GameFlow {
 
 	public static void main(String[] args) {
 		
-		//get player names
-		scanner = new Scanner(System.in);  // Create a Scanner object
+		scanner = new Scanner(System.in);
 		String userInput;
 		
-		System.out.println("Player1, please enter your name.");
-	    String userName = scanner.nextLine();  // Read user input
-	    player1.name = userName;
+		//TODO: send error message for invalid input
+		do {
+			System.out.print("Please enter the number of desired players: ");
+		    numberOfPlayers = scanner.nextInt();  // Read user input
+		} while (numberOfPlayers<2||numberOfPlayers>TABLE_SIZE);
+		
+		System.out.println();
+		
+		//get player's name then initialize their stack
+		for (int i=0;i<numberOfPlayers; i++) {
+			System.out.println("Player "+i+", please enter your name.");
+		    String userName = scanner.nextLine();  // Read user input
+		    players[i].name = userName;
+		    players[i].stack = BUY_IN;
+		}
 	    
-	    System.out.println("Player2, please enter your name.");
-	    userName = scanner.nextLine();  // Read user input
-	    player2.name = userName;
-	    
-	    //initialize button, and stacks
-	    button = player1;
-	    notButton = player2;
-	    
-	    player1.stack = BUY_IN;	player2.stack = BUY_IN;
-
-	    
+		GameHand gameHand;
+		
 		//play hand
-		while (player1.stack>0 && player2.stack>0) {
+		while (!checkHaveWinner(players)) { //TODO: change method in while condition to return the index number of the winning player or -1 if there's no winner yet 
 			
 			//reinitialize hand variables
-			GameHand gameHand = new GameHand();
+			gameHand = new GameHand();
 			
-			//button posts small blind
-			button.stack-=SMALL_BLIND;
+			//TODO: create players[index].postBet(int betSize) method in Player which returns the actual amount posted if the player doesnt have enough to post the whole blind
+			//post small blind
+			players[smallBlindPlayerIndex].stack-=SMALL_BLIND;
 			gameHand.pot+=SMALL_BLIND;
 			
-			//other player posts big blind
-			notButton.stack-=BIG_BLIND;
+			//post big blind
+			players[bigBlindPlayerIndex].stack-=BIG_BLIND;
 			gameHand.pot+=BIG_BLIND;
 			
 			gameHand.betToMatch=BIG_BLIND;
 			
-			System.out.println(button.name+" has posted small blind, and "+notButton.name+" has posted big blind.");
+			System.out.println(players[smallBlindPlayerIndex]+" has posted small blind, and "+players[bigBlindPlayerIndex]+" has posted big blind.");
 			printStacks();
 			System.out.println("Pot is: "+gameHand.pot);
 
@@ -78,6 +87,12 @@ public class GameFlow {
 				e.printStackTrace();
 			}
 			
+			//print players' hands
+			String handMessage = ", your hand is: ";
+			System.out.println(notButton.name+handMessage+notButton.readHand());
+			System.out.println(button.name+handMessage+button.readHand());
+
+			
 			//betting process
 			gameHand.betsAreOver = false;
 			gameHand.handIsOver = false;
@@ -86,37 +101,45 @@ public class GameFlow {
 				doBettingProcess(gameHand);
 			}
 			
+			//TODO: create new bettingProcess object instead of resetting gameHand variables
 			gameHand.resetBettingProcess();
 			
 			//dealer flops
 			
-			//while players havent checked or called {
-				//button folds, calls, or raises
-				
-				//other player checks, folds, calls, or raises
-			//}
+			//create new betting process
 			
 			//dealer turns...
-			//etc
+
+			//create new betting process
+
 			//dealer rivers...
-			//etc
+
+			//create new betting process
 			
-			//show cards process (to be changed to actual poker rules later)
-			//dealer shows hand
-			//if notDealer beats, then show and winner = notDealer
-			//if notDealer doesnt beat, then dont show and winner = dealer
+			//hand judger process
+			
+			//show cards process
 					
 			//winner collects pot
-			//switch positions
+			
+			//increment positions for next hand
+			smallBlindPlayerIndex = modAddition(smallBlindPlayerIndex, 1);
+			bigBlindPlayerIndex = modAddition(bigBlindPlayerIndex, 1);
 		}
 		
-		if (player1.stack<=0) {
-			System.out.println("Player2 is the winner.");
-		} else {
-			System.out.println("Player1 is the winner.");
+		//reaches here when we have winner
+		
+		//find who is winner
+		for (int i=0;i<players.length;i++) {
+			if (players[i].stack>0) {
+				System.out.println(players[i].name+" is the winner.");
+				break;
+			}
 		}
-
-
+	}
+	
+	static private int modAddition(int smallBlindPlayerIndex, int toAdd) {
+		return (smallBlindPlayerIndex+toAdd)%numberOfPlayers;
 	}
 	
 	private void swapPlayerPositions() {
@@ -126,9 +149,24 @@ public class GameFlow {
 	}
 	
 	private static void printStacks() {
-		System.out.println(player1.name+": "+player1.stack);
-		System.out.println(player2.name+": "+player2.stack);
-
+		for (int i=0;i<numberOfPlayers; i++) {
+			System.out.println(players[i].name+": "+players[i].stack);
+		}
+	}
+	
+	static private boolean checkHaveWinner(Player[] players) {
+		int playersWithStacks = 0;
+		for (int i=0;i<players.length;i++) {
+			if (players[i].stack>0) {
+				playersWithStacks++;
+			}
+		}
+		
+		if (playersWithStacks>=2) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private static void doBettingProcess(GameHand gameHand) {
@@ -136,37 +174,24 @@ public class GameFlow {
 		
 		String queryMessage = ", what shall you do? Enter f for fold, c for call/check, or r XXX to raise where XXX is the amount...";
 		
-		//button folds, calls, or raises
-		printStacks();
-		System.out.println("Pot is: "+gameHand.pot);
-		System.out.println(button.name+queryMessage);	
-		userInput = scanner.nextLine();  // Read user input
 		
-		//try again if input not valid
-		while (!validateUserInput(userInput, button)) {
-			System.out.println("Invalid input: "+userInput);
-			System.out.println(button.name+queryMessage);	
+		for (int i=0;i<players.length;i++) {
+			//player folds, calls, or raises
+			printStacks();
+			System.out.println("Pot is: "+gameHand.pot);
+			System.out.println(players[i].name+queryMessage);	
 			userInput = scanner.nextLine();  // Read user input
+			
+			//try again if input not valid
+			while (!validateUserInput(userInput, players[i])) {
+				System.out.println("Invalid input: "+userInput);
+				System.out.println(players[i].name+queryMessage);	
+				userInput = scanner.nextLine();  // Read user input
+			}
+			
+			//processUserInput
+			processUserInput(userInput, players[i], gameHand);
 		}
-		
-		//processUserInput
-		processUserInput(userInput, button, gameHand);
-		
-		//other player checks, folds, calls, or raises
-		printStacks();
-		System.out.println("Pot is: "+gameHand.pot);
-		System.out.println(notButton.name+queryMessage);	
-		userInput = scanner.nextLine();  // Read user input
-		
-		//try again if input not valid
-		while (!validateUserInput(userInput, notButton)) {
-			System.out.println("Invalid input: "+userInput);
-			System.out.println(notButton.name+queryMessage);	
-			userInput = scanner.nextLine();  // Read user input
-		}
-		
-		//processUserInput
-		processUserInput(userInput, notButton, gameHand);
 	}
 	
 	public static boolean validateUserInput(String input, Player player) {

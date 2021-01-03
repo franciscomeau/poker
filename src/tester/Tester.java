@@ -15,7 +15,7 @@ public class Tester {
 	    userInput = scanner.nextLine();  // Read user input
 	    
 	    
-		System.out.println(GameFlow.validateUserInput(userInput));
+		//System.out.println(GameFlow.validateUserInput(userInput));
 
 	}
 
