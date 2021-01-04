@@ -161,25 +161,28 @@ public class GameFlow {
 	private static void doBettingProcess(GameHand gameHand) {
 		String userInput;
 		
-		String queryMessage = ", what shall you do? Enter f for fold, c for call/check, or r XXX to raise where XXX is the amount...";
+		String queryMessage = ", what shall you do? Enter f for fold, c for call/check, or r XXX to raise where XXX is the amount: ";
 		
 		
 		for (int i=0;i<players.length;i++) {
-			//player folds, calls, or raises
-			printStacks();
-			System.out.println("Pot is: "+gameHand.pot);
-			System.out.println(players[i].name+queryMessage);	
-			userInput = scanner.nextLine();  // Read user input
 			
-			//try again if input not valid
-			while (!validateUserInput(userInput, players[i])) {
-				System.out.println("Invalid input: "+userInput);
+			while (true) {
+				
+				//player folds, calls, or raises
+				printStacks();
+				System.out.println("Pot is: "+gameHand.pot);
 				System.out.println(players[i].name+queryMessage);	
 				userInput = scanner.nextLine();  // Read user input
+				
+				if (validateUserInput(userInput, players[i])&&processUserInput(userInput, players[i], gameHand)) {
+					break;
+				}
+				
+				//reach here if input was not valid
+				
+				System.out.println("Invalid input: "+userInput);
 			}
-			
-			//processUserInput
-			processUserInput(userInput, players[i], gameHand);
+			//reach here when input is valid
 		}
 	}
 	
@@ -191,15 +194,11 @@ public class GameFlow {
 		
 		if (!matcher.matches()) return false;
 		
-		if (input.charAt(0)=='r') {
-			int raiseAmount = Integer.parseInt(input.substring(2));
-			if (raiseAmount < BIG_BLIND || raiseAmount > player.stack) return false;
-		}
-		
 		return true;
 	}
 	
-	private static void processUserInput(String userInput, Player player, GameHand gameHand) {
+	//returns 1 when input was valid or 0 when invalid
+	private static boolean processUserInput(String userInput, Player player, GameHand gameHand) {
 		
 		if (userInput.charAt(0) == 'f') {
 			gameHand.betsAreOver = true;
@@ -215,10 +214,15 @@ public class GameFlow {
 		
 		if (userInput.charAt(0) == 'r') {
 			int raiseAmount = Integer.parseInt(userInput.substring(2));
+			if (raiseAmount<=gameHand.betToMatch||raiseAmount < BIG_BLIND || raiseAmount > player.stack) {
+				return false;
+			}
 			gameHand.betToMatch = raiseAmount;
 			player.postBet(raiseAmount);
 			gameHand.pot += raiseAmount;
 		}
+		
+		return true;
 		
 	}
 	
