@@ -43,7 +43,7 @@ public class GameHand {
 				System.out.println(players[i].name+queryMessage);	
 				userInput = GameFlow.scanner.nextLine();  // Read user input
 				
-				if (GameFlow.validateUserInput(userInput, players[i])&&GameFlow.processUserInput(userInput, players[i], this)) {
+				if (GameFlow.validateUserInput(userInput, players[i])&&processUserInput(userInput, players[i])) {
 					break;
 				}
 				
