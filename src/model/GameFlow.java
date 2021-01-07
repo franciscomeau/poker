@@ -20,7 +20,7 @@ public class GameFlow {
 	static Player notButton;
 	static Dealer dealer = new Dealer(new Deck());
 	
-	static Scanner scanner;
+	public static Scanner scanner;
 	
 	
 
@@ -63,8 +63,7 @@ public class GameFlow {
 			//post big blind
 			gameHand.pot+=players[bigBlindPlayerIndex].postBet(BIG_BLIND);
 
-			//TODO: make betToMatch part of a new bettingProcess class
-			gameHand.betToMatch=BIG_BLIND;
+			gameHand.bettingProcess.betToMatch=BIG_BLIND;
 			
 			System.out.println(players[smallBlindPlayerIndex]+" has posted small blind, and "+players[bigBlindPlayerIndex]+" has posted big blind.");
 			printStacks();
@@ -89,24 +88,20 @@ public class GameFlow {
 			}
 			
 			//betting process
-			//initialize betting process variables
-			gameHand.betsAreOver = false;
-			gameHand.handIsOver = false;
-			
-			while (!gameHand.betsAreOver) {
+			while (!gameHand.bettingProcess.betsAreOver) {
 				doBettingProcess(gameHand);
 			}
 			
-			//TODO: create new bettingProcess object, from new bettingProcess class, instead of resetting gameHand variables
+			//creates new bettingProcess object
 			gameHand.resetBettingProcess();
 			
 			//dealer flops
 			
-			//create new betting process
+			//do betting process
 			
 			//dealer turns...
 
-			//create new betting process
+			//do betting process
 
 			//dealer rivers...
 
@@ -136,7 +131,7 @@ public class GameFlow {
 		return (smallBlindPlayerIndex+toAdd)%numberOfPlayers;
 	}
 	
-	private static void printStacks() {
+	public static void printStacks() {
 		for (int i=0;i<numberOfPlayers; i++) {
 			System.out.println(players[i].name+": "+players[i].stack);
 		}
@@ -174,7 +169,8 @@ public class GameFlow {
 				System.out.println(players[i].name+queryMessage);	
 				userInput = scanner.nextLine();  // Read user input
 				
-				if (validateUserInput(userInput, players[i])&&processUserInput(userInput, players[i], gameHand)) {
+				if (validateUserInput(userInput, players[i])&&gameHand.processUserInput(userInput, players[i])) {
+					//reach here if input was valid and processed with success
 					break;
 				}
 				
@@ -195,36 +191,7 @@ public class GameFlow {
 		if (!matcher.matches()) return false;
 		
 		return true;
-	}
-	
-	//returns 1 when input was valid or 0 when invalid
-	private static boolean processUserInput(String userInput, Player player, GameHand gameHand) {
-		
-		if (userInput.charAt(0) == 'f') {
-			gameHand.betsAreOver = true;
-			gameHand.handIsOver = true;
-			gameHand.handWinner = getOtherPlayer(player);
-		}
-		
-		if (userInput.charAt(0) == 'c') {
-			player.postBet(gameHand.betToMatch);
-			gameHand.pot += gameHand.betToMatch;
-			gameHand.betsAreOver = true;
-		}
-		
-		if (userInput.charAt(0) == 'r') {
-			int raiseAmount = Integer.parseInt(userInput.substring(2));
-			if (raiseAmount<=gameHand.betToMatch||raiseAmount < BIG_BLIND || raiseAmount > player.stack) {
-				return false;
-			}
-			gameHand.betToMatch = raiseAmount;
-			player.postBet(raiseAmount);
-			gameHand.pot += raiseAmount;
-		}
-		
-		return true;
-		
-	}
+	}	
 	
 	public static Player getOtherPlayer(Player player) {
 		if (player==button) return notButton;
